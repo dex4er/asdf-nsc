@@ -81,9 +81,9 @@ function install() {
 	gh_curl -H "Accept: application/octet-stream" -o "${download_filename}" "${download_url}"
 
 	if command -v shasum >/dev/null; then
-		gh_curl -H "Accept: application/octet-stream" "${checksum_url}" | shasum -a 256 -c
+		gh_curl -H "Accept: application/octet-stream" "${checksum_url}" | awk "\$2 == \"${download_filename}\" {print}" | shasum -a 256 -c
 	elif command -v sha256sum >/dev/null; then
-		gh_curl -H "Accept: application/octet-stream" "${checksum_url}" | sha256sum -c
+		gh_curl -H "Accept: application/octet-stream" "${checksum_url}" | awk "\$2 == \"${download_filename}\" {print}" | sha256sum -c
 	fi
 
 	mkdir -p "${bin_install_path}"
