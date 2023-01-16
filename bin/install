@@ -59,12 +59,12 @@ function install() {
 		asset_url="https://api.github.com/repos/nats-io/nsc/releases/tags/${prefix}${version}"
 		download_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${download_filename}\"))[0].url")
 		if [[ ${download_url} == null ]]; then
-			echo "Package ${download_filename} not found in a release."
+			echo "Package ${download_filename} not found in a release ${prefix}${version}."
 			exit 1
 		fi
 		checksum_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${checksum_filename}\"))[0].url")
 		if [[ ${checksum_url} == null ]]; then
-			echo "Checksum ${checksum_filename} not found in a release."
+			echo "Checksum ${checksum_filename} not found in a release ${prefix}${version}."
 			exit 1
 		fi
 	else
@@ -86,8 +86,9 @@ function install() {
 		gh_curl -H "Accept: application/octet-stream" "${checksum_url}" | sha256sum -c
 	fi
 
-	unzip "${download_filename}"
-	cp nsc "${bin_install_path}/nsc"
+	mkdir -p "${bin_install_path}"
+
+	unzip -p "${download_filename}" >"${bin_install_path}/nsc"
 	chmod +x "${bin_install_path}/nsc"
 
 	popd >/dev/null

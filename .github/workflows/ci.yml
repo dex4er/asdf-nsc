@@ -36,7 +36,7 @@ jobs:
       - name: Test plugin
         uses: asdf-vm/actions/plugin-test@v1
         with:
-          command: nsc </dev/null
+          command: nsc --version
 
   macos:
     runs-on: macos-latest
@@ -48,4 +48,4 @@ jobs:
       - name: Test plugin
         uses: asdf-vm/actions/plugin-test@v1
         with:
-          command: nsc </dev/null
+          command: nsc --version
