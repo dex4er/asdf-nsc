@@ -51,7 +51,7 @@ function install() {
 	local download_url
 	local checksum_url
 
-	local download_filename="nsc_${platform}_${arch}.zip"
+	local download_filename="nsc-${platform}-${arch}.zip"
 	local checksum_filename="SHA256SUMS-nsc.txt"
 
 	if [[ -n ${GITHUB_API_TOKEN:-} ]]; then
