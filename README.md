@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/dex4er/asdf-nsc/actions/workflows/ci.yml/badge.svg)](https://github.com/dex4er/asdf-nsc/actions/workflows/ci.yml)
 
-[nsc](https://github.com/nats-io/nsc) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
+[NSC](https://github.com/nats-io/nsc) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
+
+NSC is a tool for creating NATS account and user access configurations.
 
 ## Prerequisites
 
