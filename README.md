@@ -4,6 +4,11 @@
 
 [nsc](https://github.com/nats-io/nsc) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
 
+## Prerequisites
+
+- jq (only if `GITHUB_API_TOKEN` environment variable is used)
+- unzip
+
 ## Install
 
 ```shell
