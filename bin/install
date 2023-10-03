@@ -88,8 +88,8 @@ function install() {
 	mkdir -p "${bin_install_path}"
 
 	unzip "${download_filename}"
-	chmod +x "${bin_install_path}/nsc"
-	cp -fp "${download_filename}/nsc" "${bin_install_path}/nsc"
+	chmod +x "${tmp_download_dir}/nsc"
+	cp -fp "${tmp_download_dir}/nsc" "${bin_install_path}/nsc"
 
 	popd >/dev/null
 }
