@@ -8,10 +8,12 @@ shopt -s inherit_errexit 2>/dev/null || true
 [[ -z ${ASDF_INSTALL_PATH+x} ]] && echo "ASDF_INSTALL_PATH is required" && exit 1
 
 function gh_curl() {
-	if [[ -n ${GITHUB_API_TOKEN:-} ]]; then
-		curl -fsSL -H "Authorization: token ${GITHUB_API_TOKEN}" "$@"
+	if [[ -n ${GITHUB_TOKEN-} ]]; then
+		curl -fLsS -H "Authorization: token ${GITHUB_TOKEN}" "$@"
+	elif [[ -n ${GITHUB_API_TOKEN-} ]]; then
+		curl -fLsS -H "Authorization: token ${GITHUB_API_TOKEN}" "$@"
 	else
-		curl -fsSL "$@"
+		curl -fLsS "$@"
 	fi
 }
 
@@ -29,11 +31,7 @@ function install() {
 
 	local tmp_download_dir
 
-	if [[ -z ${TMPDIR:-} ]]; then
-		tmp_download_dir=$(mktemp -d)
-	else
-		tmp_download_dir=${TMPDIR%/}
-	fi
+	tmp_download_dir=$(mktemp -d -t asdf.XXXXXXXX)
 
 	local bin_install_path="${install_path}/bin"
 
@@ -51,28 +49,29 @@ function install() {
 	local download_url
 	local checksum_url
 
+	local repo="nats-io/nsc"
 	local download_filename="nsc-${platform}-${arch}.zip"
 	local checksum_filename="SHA256SUMS-nsc.txt"
 
-	if [[ -n ${GITHUB_API_TOKEN:-} ]]; then
+	if [[ -n ${GITHUB_TOKEN-} ]] || [[ -n ${GITHUB_API_TOKEN-} ]]; then
 		local asset_url
-		asset_url="https://api.github.com/repos/nats-io/nsc/releases/tags/${prefix}${version}"
+		asset_url="https://api.github.com/repos/${repo}/releases/tags/${prefix}${version}"
 		download_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${download_filename}\"))[0].url")
 		if [[ ${download_url} == null ]]; then
-			echo "Package ${download_filename} not found in a release ${prefix}${version}."
+			echo "Asset ${download_filename} not found in a release ${prefix}${version}."
 			exit 1
 		fi
 		checksum_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${checksum_filename}\"))[0].url")
 		if [[ ${checksum_url} == null ]]; then
-			echo "Checksum ${checksum_filename} not found in a release ${prefix}${version}."
+			echo "Asset ${checksum_filename} not found in a release ${prefix}${version}."
 			exit 1
 		fi
 	else
-		download_url="https://github.com/nats-io/nsc/releases/download/${prefix}${version}/${download_filename}"
-		checksum_url="https://github.com/nats-io/nsc/releases/download/${prefix}${version}/${checksum_filename}"
+		download_url="https://github.com/${repo}/releases/download/${prefix}${version}/${download_filename}"
+		checksum_url="https://github.com/${repo}/releases/download/${prefix}${version}/${checksum_filename}"
 	fi
 
-	echo "Downloading nsc from ${download_url}"
+	echo "Downloading ${download_filename} from release ${prefix}${version} from ${download_url}"
 
 	mkdir -p "${tmp_download_dir}"
 
@@ -88,8 +87,9 @@ function install() {
 
 	mkdir -p "${bin_install_path}"
 
-	unzip -p "${download_filename}" >"${bin_install_path}/nsc"
-	chmod +x "${bin_install_path}/nsc"
+	unzip "${download_filename}"
+	chmod +x "${tmp_download_dir}/nsc"
+	cp -fp "${tmp_download_dir}/nsc" "${bin_install_path}/nsc"
 
 	popd >/dev/null
 }
