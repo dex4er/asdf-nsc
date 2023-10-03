@@ -49,6 +49,7 @@ function install() {
 	local download_url
 	local checksum_url
 
+	local repo="nats-io/nsc"
 	local download_filename="nsc-${platform}-${arch}.zip"
 	local checksum_filename="SHA256SUMS-nsc.txt"
 
